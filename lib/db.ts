@@ -1,9 +1,11 @@
 import { neon } from '@neondatabase/serverless'
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL environment variable is not set')
+// Lazily initialise so a missing env var doesn't crash the build.
+// The check happens at request-time (inside API routes), not at module load.
+function getDb() {
+  const url = process.env.DATABASE_URL
+  if (!url) throw new Error('DATABASE_URL environment variable is not set')
+  return neon(url)
 }
 
-const sql = neon(process.env.DATABASE_URL)
-
-export default sql
+export default getDb

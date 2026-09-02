@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import sql from '@/lib/db'
+import getDb from '@/lib/db'
 
 // GET /api/user — fetch demo user (id = 1)
 export async function GET() {
   try {
+    const sql = getDb()
     const rows = await sql`SELECT * FROM users WHERE id = 1 LIMIT 1`
     if (rows.length === 0) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -32,6 +33,7 @@ export async function PUT(req: NextRequest) {
       sms_notifications,
     } = body
 
+    const sql = getDb()
     await sql`
       UPDATE users SET
         first_name = ${first_name ?? ''},
